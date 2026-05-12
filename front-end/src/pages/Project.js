@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Projects({ isCollapsed, setIsCollapsed }) {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   const [tasks, setTasks] = useState([]);
   const [projects, setProjects] = useState([]);

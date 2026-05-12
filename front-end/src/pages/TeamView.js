@@ -27,8 +27,9 @@ function TeamView({ isCollapsed, setIsCollapsed }) {
   const fetchAllData = async () => {
     try {
       const [userRes, taskRes] = await Promise.all([
-      axios.get(`${API_URL}/api/auth/users`),
-      axios.get(`${API_URL}/api/tasks`)
+        axios.get(`${API_URL}/api/auth/users`),
+        axios.get(`${API_URL}/api/tasks`)
+      ]);
 
       setUsers(userRes.data);
       setTasks(taskRes.data);
