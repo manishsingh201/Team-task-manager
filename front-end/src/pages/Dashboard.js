@@ -24,6 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 function Dashboard({ isCollapsed, setIsCollapsed }) {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   const [tasks, setTasks] = useState([]);
   const [team, setTeam] = useState([]);
@@ -81,15 +82,15 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
       const [taskRes, teamRes, projRes] =
         await Promise.all([
           axios.get(
-            "http://localhost:5000/api/tasks"
+            `${API_URL}/api/tasks`
           ),
 
           axios.get(
-            "http://localhost:5000/api/auth/users"
+            `${API_URL}/api/auth/users`
           ),
 
           axios.get(
-            "http://localhost:5000/api/projects"
+            `${API_URL}/api/projects`
           ),
         ]);
 
@@ -145,7 +146,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/tasks/add",
+        `${API_URL}/api/tasks/add`,
         taskData
       );
 
@@ -168,7 +169,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
   ) => {
     try {
       await axios.put(
-        `http://localhost:5000/api/tasks/${id}`,
+        `${API_URL}/api/tasks/${id}`,
         {
           status: "Completed",
         }
@@ -188,7 +189,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
     if (window.confirm("Delete task?")) {
       try {
         await axios.delete(
-          `http://localhost:5000/api/tasks/${id}`
+          `${API_URL}/api/tasks/${id}`
         );
 
         toast.info("Task Deleted");

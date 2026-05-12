@@ -30,8 +30,8 @@ function Projects({ isCollapsed, setIsCollapsed }) {
   const fetchInitialData = async () => {
     try {
       const [taskRes, projRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/tasks"),
-        axios.get("http://localhost:5000/api/projects"),
+        axios.get(`${API_URL}/api/tasks`),
+        axios.get(`${API_URL}/api/projects`),
       ]);
 
       setTasks(taskRes.data);
@@ -51,7 +51,7 @@ function Projects({ isCollapsed, setIsCollapsed }) {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/projects/add",
+        `${API_URL}/api/projects/add`,
         {
           name: newProjName,
         }

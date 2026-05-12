@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function TeamView({ isCollapsed, setIsCollapsed }) {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -26,9 +27,8 @@ function TeamView({ isCollapsed, setIsCollapsed }) {
   const fetchAllData = async () => {
     try {
       const [userRes, taskRes] = await Promise.all([
-        axios.get("http://localhost:5000/api/auth/users"),
-        axios.get("http://localhost:5000/api/tasks")
-      ]);
+      axios.get(`${API_URL}/api/auth/users`),
+      axios.get(`${API_URL}/api/tasks`)
 
       setUsers(userRes.data);
       setTasks(taskRes.data);
@@ -47,7 +47,7 @@ function TeamView({ isCollapsed, setIsCollapsed }) {
   const handleRemoveMember = async (id, name) => {
     if (window.confirm(`Remove ${name} from team?`)) {
       try {
-        await axios.delete(`http://localhost:5000/api/auth/users/${id}`);
+        await axios.delete(`${API_URL}/api/auth/users/${id}`);
 
         toast.success(`${name} removed`);
         fetchAllData();

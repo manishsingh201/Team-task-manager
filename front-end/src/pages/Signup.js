@@ -4,11 +4,12 @@ import axios from "axios";
 
 function Signup() {
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
   const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "Member" });
 
   const handleSignup = async () => {
     try {
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      await axios.post(`${API_URL}/api/auth/register`, formData);
       alert("Account Created Successfully! 🎉");
       navigate("/"); // Register hone ke baad wapas Login page pe
     } catch (error) {
