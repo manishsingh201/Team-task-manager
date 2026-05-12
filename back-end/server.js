@@ -1,0 +1,29 @@
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
+
+const app = express();
+
+const taskRoutes = require("./routes/taskRoutes");
+const authRoutes = require("./routes/authRoutes");
+const projectRoutes = require("./routes/projectRoutes"); // 1. Naya Route Import Karo
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api/tasks", taskRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/projects", projectRoutes); // 2. Is line ko add karo
+
+app.get("/", (req, res) => {
+  res.send("API Running");
+});
+
+mongoose.connect(process.env.MONGO_URI)
+.then(() => console.log("MongoDB Connected"))
+.catch((err) => console.log(err));
+
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
