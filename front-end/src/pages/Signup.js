@@ -4,7 +4,7 @@ import axios from "axios";
 
 function Signup() {
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  const API_URL = process.env.REACT_APP_API_URL || "https://team-task-manager-q0l9.onrender.com";
   const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "Member" });
 
   const handleSignup = async () => {
@@ -27,7 +27,7 @@ function Signup() {
         
         <div style={{ marginTop: "20px" }}>
           <label style={labelStyle}>Full Name</label>
-          <input type="text" placeholder="Mohan Singh" onChange={(e) => setFormData({...formData, name: e.target.value})} style={inputStyle} />
+          <input type="text" placeholder="your name" onChange={(e) => setFormData({...formData, name: e.target.value})} style={inputStyle} />
           
           <label style={labelStyle}>Email Address</label>
           <input type="email" placeholder="name@company.com" onChange={(e) => setFormData({...formData, email: e.target.value})} style={inputStyle} />

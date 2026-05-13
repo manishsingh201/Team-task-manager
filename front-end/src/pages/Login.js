@@ -4,7 +4,7 @@ import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  const API_URL = process.env.REACT_APP_API_URL || "https://team-task-manager-q0l9.onrender.com";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -16,7 +16,7 @@ function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user)); 
       
-      alert("Welcome Back! 🚀");
+      alert("Welcome🚀");
       navigate("/dashboard"); // Successful login ke baad Dashboard
     } catch (error) {
       console.error("Login Error:", error);
