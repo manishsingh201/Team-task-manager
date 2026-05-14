@@ -91,24 +91,24 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
     navigate("/");
   };
 
-  // FIXED: Logic to handle projectId instead of projectName
   const handleAddTask = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     
+    // Find project ID from selected name
     const selectedProjectName = formData.get("projectName");
     const selectedProject = projects.find(p => p.name === selectedProjectName);
 
     const taskData = {
       title: formData.get("title"),
-      projectId: selectedProject ? selectedProject._id : null, // Corrected to send ID
-      assignedTo: formData.get("assignedTo"),
+      projectId: selectedProject ? selectedProject._id : null,
+      assignedTo: formData.get("assignedTo"), // This captures the email from the <option value={m.email}>
       deadline: formData.get("deadline"),
       priority: formData.get("priority"),
     };
 
     if (!taskData.title || !taskData.assignedTo || !taskData.projectId) {
-      return toast.warn("Please fill all fields and select a project");
+      return toast.warn("Please fill all fields");
     }
 
     try {
@@ -141,6 +141,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
 
   const displayTasks = useMemo(() => {
     if (!user) return [];
+    // ADMIN sees all tasks, MEMBER sees only tasks matching their logged-in email
     return user.role === "Admin" ? tasks : tasks.filter((t) => t.assignedTo === user.email);
   }, [tasks, user]);
 
@@ -222,7 +223,10 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
               </select>
               <select name="assignedTo" required style={inputStyle}>
                 <option value="">Assign Member</option>
-                {team.map((m) => <option key={m._id} value={m.email}>{m.name}</option>)}
+                {team.map((m) => (
+                  // DISPLAY name, but SUBMIT email
+                  <option key={m._id} value={m.email}>{m.name}</option>
+                ))}
               </select>
               <select name="priority" style={inputStyle}><option value="Medium">Medium</option><option value="High">High</option><option value="Low">Low</option></select>
               <input name="deadline" type="date" required style={inputStyle} />
@@ -239,7 +243,6 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
               <div key={task._id} style={{ ...taskCardStyle, borderTop: `6px solid ${pColor}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={badgeStyle(task.status)}>{task.status}</span>
-                  {/* Updated to show project name even if using ObjectID logic */}
                   <span style={projectBadgeStyle}>📁 {task.projectId?.name || "General"}</span>
                 </div>
                 <h3 style={taskTitleStyle}>{task.title}</h3>
