@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Project = require("../models/Project");
+const Task = require("../models/Task"); // Import Task to clean up orphans
 
 // 1. GET ALL PROJECTS
 router.get("/", async (req, res) => {
@@ -23,17 +24,24 @@ router.post("/add", async (req, res) => {
   }
 });
 
-// 3. DELETE PROJECT - This matches app.use("/api/projects", projectRoutes)
+// 3. DELETE PROJECT & LINKED TASKS
 router.delete("/:id", async (req, res) => {
-  // This log will show up in your Render "Logs" tab
-  console.log("Delete request received for Project ID:", req.params.id);
+  const { id } = req.params;
+  console.log("Delete request received for Project ID:", id);
   
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    // Delete the project
+    const project = await Project.findByIdAndDelete(id);
+    
     if (!project) {
       return res.status(404).json({ message: "Project not found in database" });
     }
-    res.json({ message: "Project deleted successfully" });
+
+    // CASCADE DELETE: Remove all tasks associated with this project
+    // This prevents "Sync Failed" errors on the Dashboard
+    await Task.deleteMany({ projectId: id });
+    
+    res.json({ message: "Project and associated tasks deleted successfully" });
   } catch (err) {
     console.error("Delete Error:", err.message);
     res.status(500).json({ error: err.message });
