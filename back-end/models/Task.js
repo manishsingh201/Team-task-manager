@@ -8,22 +8,20 @@ const taskSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  // Task ko kisi specific project se jodne ke liye
-  projectName: {
-    type: String,
-    default: "General", // Default "General" project
+  // CHANGE THIS: Link to the Project Model instead of just a String
+  projectId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project",
+    required: true
   },
-  // Kis member ko kaam dena hai, uska email yahan aayega
   assignedTo: {
     type: String,
     required: true,
   },
-  // Task kab tak khatam hona chahiye (Overdue logic ke liye zaroori hai)
   deadline: {
     type: Date,
     required: true,
   },
-  // Priority logic (High/Medium/Low) - isse filtering asan hoti hai
   priority: {
     type: String,
     enum: ["High", "Medium", "Low"],
@@ -31,7 +29,7 @@ const taskSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Completed"], // Sirf ye do status valid hain
+    enum: ["Pending", "Completed"],
     default: "Pending",
   },
   createdAt: {
