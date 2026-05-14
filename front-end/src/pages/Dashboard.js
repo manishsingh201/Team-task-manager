@@ -18,9 +18,9 @@ const TaskPieChart = React.memo(({ data }) => {
           dataKey="value"
           stroke="none"
           isAnimationActive={true}
-          animationDuration={1500} // SLOWER: Increased from 500 to 1500
-          animationBegin={300}    // Slight delay for a professional feel
-          animationEasing="ease-in-out" // Smoother transition
+          animationDuration={1500}
+          animationBegin={300}
+          animationEasing="ease-in-out"
         >
           {data.map((entry, index) => (
             <Cell key={index} fill={entry.color} />
@@ -91,23 +91,34 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
     navigate("/");
   };
 
+  // FIXED: Logic to handle projectId instead of projectName
   const handleAddTask = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    
+    const selectedProjectName = formData.get("projectName");
+    const selectedProject = projects.find(p => p.name === selectedProjectName);
+
     const taskData = {
       title: formData.get("title"),
-      projectName: formData.get("projectName"),
+      projectId: selectedProject ? selectedProject._id : null, // Corrected to send ID
       assignedTo: formData.get("assignedTo"),
       deadline: formData.get("deadline"),
       priority: formData.get("priority"),
     };
-    if (!taskData.title || !taskData.assignedTo || !taskData.projectName) return toast.warn("Please fill all fields");
+
+    if (!taskData.title || !taskData.assignedTo || !taskData.projectId) {
+      return toast.warn("Please fill all fields and select a project");
+    }
+
     try {
       await axios.post(`${API_URL}/api/tasks/add`, taskData);
       toast.success("Task Assigned Successfully 🚀");
       e.target.reset();
       fetchData(false);
-    } catch (err) { toast.error("Failed to add task"); }
+    } catch (err) { 
+      toast.error(err.response?.data?.message || "Failed to add task"); 
+    }
   };
 
   const handleUpdateStatus = async (id) => {
@@ -228,7 +239,8 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
               <div key={task._id} style={{ ...taskCardStyle, borderTop: `6px solid ${pColor}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={badgeStyle(task.status)}>{task.status}</span>
-                  <span style={projectBadgeStyle}>📁 {task.projectName || "General"}</span>
+                  {/* Updated to show project name even if using ObjectID logic */}
+                  <span style={projectBadgeStyle}>📁 {task.projectId?.name || "General"}</span>
                 </div>
                 <h3 style={taskTitleStyle}>{task.title}</h3>
                 <p style={taskTextStyle}>Assigned To: <b>{getAssignedName(task.assignedTo)}</b></p>
