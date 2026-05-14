@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ["Admin", "Member"],
-    default: "Member",
+    default: "Member", // Security: Default to lowest privilege
   },
 });
 
