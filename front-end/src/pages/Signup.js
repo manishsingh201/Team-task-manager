@@ -15,12 +15,22 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const key = name === "fullName" ? "name" : name === "userEmail" ? "email" : name === "signupPassword" ? "password" : name;
+    setFormData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
   const handleSignup = async () => {
     if (!formData.name || !formData.email || !formData.password) {
       alert("Please fill in all fields.");
+      return;
+    }
+
+    if (!isValidEmail(formData.email)) {
+      alert("Please enter a valid email address.");
       return;
     }
 
@@ -37,6 +47,11 @@ function Signup() {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleSignup();
+  };
+
   return (
     <div style={containerStyle}>
       <div style={cardStyle}>
@@ -44,31 +59,38 @@ function Signup() {
         <h2 style={titleStyle}>Create Account</h2>
         <p style={subtitleStyle}>Join TaskFlow to manage your team effectively</p>
         
-        <div style={{ marginTop: "20px" }}>
-          <label style={labelStyle}>Full Name</label>
+        <form onSubmit={handleSubmit} autoComplete="on" style={{ marginTop: "20px" }}>
+          <label htmlFor="signup-name" style={labelStyle}>Full Name</label>
           <input 
+            id="signup-name"
             name="name"
             type="text" 
+            autoComplete="name"
             placeholder="your name" 
             value={formData.name}
             onChange={handleChange} 
             style={inputStyle} 
           />
           
-          <label style={labelStyle}>Email Address</label>
+          <label htmlFor="signup-email" style={labelStyle}>Email Address</label>
           <input 
+            id="signup-email"
             name="email"
             type="email" 
+            autoComplete="email"
             placeholder="name@company.com" 
             value={formData.email}
             onChange={handleChange} 
             style={inputStyle} 
           />
           
-          <label style={labelStyle}>Password</label>
+          <label htmlFor="signup-password" style={labelStyle}>Password</label>
           <input 
+            id="signup-password"
             name="password"
             type="password" 
+            autoComplete="new-password"
+            spellCheck="false"
             placeholder="••••••••" 
             value={formData.password}
             onChange={handleChange} 
@@ -76,7 +98,7 @@ function Signup() {
           />
           
           <button 
-            onClick={handleSignup} 
+            type="submit"
             disabled={loading}
             style={{
               ...buttonStyle, 
@@ -86,7 +108,7 @@ function Signup() {
           >
             {loading ? "Creating Account..." : "Get Started"}
           </button>
-        </div>
+        </form>
 
         <p style={footerStyle}>
           Already have an account?{" "}
