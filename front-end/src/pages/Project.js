@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,7 +11,7 @@ function ProjectView() {
   // Clean API URL to prevent double slashes
   const API_URL = (process.env.REACT_APP_API_URL || "https://team-task-manager-q0l9.onrender.com").replace(/\/$/, "");
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       const res = await axios.get(`${API_URL}/api/projects`);
       setProjects(res.data);
@@ -20,11 +20,11 @@ function ProjectView() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_URL]);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

@@ -41,7 +41,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
   const [team, setTeam] = useState([]);
   const [projects, setProjects] = useState([]);
   
-  const [user, setUser] = useState(() => {
+  const [user] = useState(() => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
   });
@@ -141,6 +141,11 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
 
   const displayTasks = useMemo(() => {
     if (!user) return [];
+    // Debug: Log what we're filtering with
+    console.log("Current user email:", user.email);
+    console.log("All tasks:", tasks);
+    console.log("Tasks assigned to current user:", tasks.filter((t) => t.assignedTo === user.email));
+    
     // ADMIN sees all tasks, MEMBER sees only tasks matching their logged-in email
     return user.role === "Admin" ? tasks : tasks.filter((t) => t.assignedTo === user.email);
   }, [tasks, user]);
