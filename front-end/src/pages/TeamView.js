@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 function TeamView({ isCollapsed, setIsCollapsed }) {
   const navigate = useNavigate();
-  const API_URL = "http://localhost:5000"; 
+ const API_URL = process.env.REACT_APP_API_URL;
 
   const [users, setUsers] = useState([]);
   const [tasks, setTasks] = useState([]);
