@@ -56,4 +56,20 @@ router.get("/users", async (req, res) => {
   }
 });
 
+// 4. DELETE USER / Remove team member
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await User.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User removed successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to remove user" });
+  }
+});
+
 module.exports = router;

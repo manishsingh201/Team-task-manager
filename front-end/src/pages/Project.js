@@ -7,9 +7,20 @@ function ProjectView() {
   const [projects, setProjects] = useState([]);
   const [newProject, setNewProject] = useState("");
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
   
   // Clean API URL to prevent double slashes
   const API_URL = (process.env.REACT_APP_API_URL || "https://team-task-manager-q0l9.onrender.com").replace(/\/$/, "");
+
+  // Get user info from localStorage
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      console.log("User loaded from localStorage:", parsedUser);
+      setUser(parsedUser);
+    }
+  }, []);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -28,6 +39,13 @@ function ProjectView() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    
+    // Check if user is admin
+    if (user?.role !== "Admin") {
+      toast.error("Only admins can create projects");
+      return;
+    }
+
     if (!newProject.trim()) return toast.warn("Project name is required");
 
     try {
@@ -41,6 +59,12 @@ function ProjectView() {
   };
 
   const handleDelete = async (id) => {
+    // Check if user is admin
+    if (user?.role !== "Admin") {
+      toast.error("Only admins can delete projects");
+      return;
+    }
+
     if (!id) return toast.error("Invalid ID");
 
     if (window.confirm("Are you sure you want to delete this project?")) {
@@ -72,18 +96,21 @@ function ProjectView() {
       
       <h1 style={titleStyle}>Projects Library 📁</h1>
 
-      <form onSubmit={handleCreate} style={formStyle}>
-        <input
-          type="text"
-          placeholder="New Project Name..."
-          style={inputStyle}
-          value={newProject}
-          onChange={(e) => setNewProject(e.target.value)}
-        />
-        <button type="submit" style={btnStyle}>
-          Create Project
-        </button>
-      </form>
+      {/* Show create form only for admins */}
+      {user?.role === "Admin" && (
+        <form onSubmit={handleCreate} style={formStyle}>
+          <input
+            type="text"
+            placeholder="New Project Name..."
+            style={inputStyle}
+            value={newProject}
+            onChange={(e) => setNewProject(e.target.value)}
+          />
+          <button type="submit" style={btnStyle}>
+            Create Project
+          </button>
+        </form>
+      )}
 
       <div style={gridStyle}>
         {projects.length === 0 ? (
@@ -95,9 +122,12 @@ function ProjectView() {
                 <span style={iconStyle}>📁</span>
                 <h3 style={projNameStyle}>{proj.name}</h3>
               </div>
-              <button onClick={() => handleDelete(proj._id)} style={delBtnStyle}>
-                Remove Project
-              </button>
+              {/* Show delete button only for admins */}
+              {user?.role === "Admin" && (
+                <button onClick={() => handleDelete(proj._id)} style={delBtnStyle}>
+                  Remove Project
+                </button>
+              )}
             </div>
           ))
         )}
