@@ -76,14 +76,14 @@ Before running this application, make sure you have:
    cd back-end
    npm start
    ```
-   Server will run on http://localhost:5000
+   Server will run on https://team-task-manager-q0l9.onrender.com
 
 2. **Start the frontend**
    ```bash
    cd front-end
    npm start
    ```
-   Frontend will run on http://localhost:3000
+   Frontend will run on https://team-task-management-498078.netlify.app/
 
 ## 📁 Project Structure
 
@@ -142,13 +142,9 @@ team-task-manager/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 👥 Authors
 
-- **Your Name** - *Initial work* - [Your GitHub](https://github.com/your-username)
+- **Mohan singh** - *Initial work* - https://github.com/manishsingh201/Team-task-manager/commits?author=manishsingh201
 
 ## 🙏 Acknowledgments
 
