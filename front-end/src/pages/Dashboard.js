@@ -5,7 +5,6 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recha
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Memoized Chart Component for performance
 const TaskPieChart = React.memo(({ data }) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -40,7 +39,7 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
   const [tasks, setTasks] = useState([]);
   const [team, setTeam] = useState([]);
   const [projects, setProjects] = useState([]);
-  
+
   const [user] = useState(() => {
     const saved = localStorage.getItem("user");
     return saved ? JSON.parse(saved) : null;
@@ -94,15 +93,14 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
   const handleAddTask = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    
-    // Find project ID from selected name
+
     const selectedProjectName = formData.get("projectName");
     const selectedProject = projects.find(p => p.name === selectedProjectName);
 
     const taskData = {
       title: formData.get("title"),
       projectId: selectedProject ? selectedProject._id : null,
-      assignedTo: formData.get("assignedTo"), // This captures the email from the <option value={m.email}>
+      assignedTo: formData.get("assignedTo"),
       deadline: formData.get("deadline"),
       priority: formData.get("priority"),
     };
@@ -116,8 +114,8 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
       toast.success("Task Assigned Successfully 🚀");
       e.target.reset();
       fetchData(false);
-    } catch (err) { 
-      toast.error(err.response?.data?.message || "Failed to add task"); 
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add task");
     }
   };
 
@@ -141,12 +139,10 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
 
   const displayTasks = useMemo(() => {
     if (!user) return [];
-    // Debug: Log what we're filtering with
     console.log("Current user email:", user.email);
     console.log("All tasks:", tasks);
     console.log("Tasks assigned to current user:", tasks.filter((t) => t.assignedTo === user.email));
-    
-    // ADMIN sees all tasks, MEMBER sees only tasks matching their logged-in email
+
     return user.role === "Admin" ? tasks : tasks.filter((t) => t.assignedTo === user.email);
   }, [tasks, user]);
 
@@ -165,6 +161,13 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
   const getAssignedName = (email) => {
     const member = team.find((m) => m.email === email);
     return member?.name || email;
+  };
+
+  const getProjectName = (projectId) => {
+    if (!projectId) return "General";
+    if (typeof projectId === "object") return projectId.name;
+    const project = projects.find((p) => p._id === projectId);
+    return project?.name || "General";
   };
 
   if (loading && tasks.length === 0) return <div style={loaderStyle}>Loading Dashboard...</div>;
@@ -229,11 +232,15 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
               <select name="assignedTo" required style={inputStyle}>
                 <option value="">Assign Member</option>
                 {team.map((m) => (
-                  // DISPLAY name, but SUBMIT email
                   <option key={m._id} value={m.email}>{m.name}</option>
                 ))}
               </select>
-              <select name="priority" style={inputStyle}><option value="Medium">Medium</option><option value="High">High</option><option value="Low">Low</option></select>
+              <select name="priority" required style={inputStyle}>
+                <option value="">Select Priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
               <input name="deadline" type="date" required style={inputStyle} />
               <button type="submit" style={addBtnStyle}>Add Task</button>
             </form>
@@ -248,14 +255,14 @@ function Dashboard({ isCollapsed, setIsCollapsed }) {
               <div key={task._id} style={{ ...taskCardStyle, borderTop: `6px solid ${pColor}` }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                   <span style={badgeStyle(task.status)}>{task.status}</span>
-                  <span style={projectBadgeStyle}>📁 {task.projectId?.name || "General"}</span>
+                  <span style={projectBadgeStyle}>📁 {getProjectName(task.projectId)}</span>
                 </div>
                 <h3 style={taskTitleStyle}>{task.title}</h3>
                 <p style={taskTextStyle}>Assigned To: <b>{getAssignedName(task.assignedTo)}</b></p>
                 <div style={footerStyle}>
                   <div><span style={deadlineLabelStyle}>DEADLINE</span><div style={{ fontWeight: "bold", color: isOverdue ? "#ef4444" : "#0f172a" }}>{new Date(task.deadline).toLocaleDateString()}</div></div>
                   <div style={{ display: "flex", gap: "10px" }}>
-                    {user.role === "Member" && task.status === "Pending" && (
+                    {task.status === "Pending" && task.assignedTo === user.email && (
                       <button style={actionBtn("#10b981")} onClick={() => handleUpdateStatus(task._id)}>Done</button>
                     )}
                     {user.role === "Admin" && (
